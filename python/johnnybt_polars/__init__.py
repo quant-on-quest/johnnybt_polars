@@ -85,16 +85,17 @@ def scan_gbk_csv(
 ) -> pl.LazyFrame:
     """Scan a vendor's GB18030 CSV resource as a LazyFrame.
 
-    An IO plugin over the Rust loader: projection pushes down into the Rust
-    decoder (only the selected columns are ever parsed), a predicate is
-    applied per batch, and the files stream through in batches rather than
-    landing as one frame. The decode itself never touches Python — each batch
-    crosses the boundary once, as an Arrow table.
+    An IO plugin over this crate's own Rust loader (absorbed from the former
+    standalone gbk-csv-loader): projection pushes down into the decoder —
+    only the selected columns are ever parsed — a predicate is applied per
+    batch, and the files stream through in batches rather than landing as one
+    frame. The decode never touches Python: each batch crosses the boundary
+    once, already a polars DataFrame.
 
     Args:
         paths: The CSV files, one instrument per file.
         schema: Column name to loader type (`str`, `float64`, `int64`,
-            `date:%Y-%m-%d`, ...), as `d2_loader` understands them.
+            `date:%Y-%m-%d`, ...).
         skip_rows: Lines to drop before the header.
         default_type: The type for columns the schema does not name.
         diagonal: Concatenate heterogeneous files diagonally — the financial
@@ -105,7 +106,7 @@ def scan_gbk_csv(
     Returns:
         A LazyFrame over the resource.
     """
-    import d2_loader
+    from johnnybt_polars import _lib
 
     named = list(schema)
     resolved = [str(path) for path in paths]
@@ -132,7 +133,7 @@ def scan_gbk_csv(
         for start in range(0, len(resolved), files_per_batch):
             batch_paths = resolved[start : start + files_per_batch]
             if diagonal:
-                frame = d2_loader.read_csvs_diagonal(
+                frame = _lib.read_gbk_csvs_diagonal(
                     paths=batch_paths, skip_rows=skip_rows, schema=schema, default_type=default_type
                 )
                 for name in wanted:
@@ -140,7 +141,7 @@ def scan_gbk_csv(
                         frame = frame.with_columns(pl.lit(None, dtype=out_schema[name]).alias(name))
                 frame = frame.select(wanted)
             else:
-                frame = d2_loader.read_csvs(
+                frame = _lib.read_gbk_csvs(
                     paths=batch_paths,
                     columns=wanted,
                     skip_rows=skip_rows,
