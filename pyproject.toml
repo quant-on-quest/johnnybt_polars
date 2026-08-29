@@ -1,0 +1,14 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "johnnybt-polars"
+version = "0.1.0"
+description = "Polars expression plugins for johnnybt: the hot paths, in Rust, parallel inside the engine."
+requires-python = ">=3.11"
+dependencies = ["polars>=1.40"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "johnnybt_polars._lib"
