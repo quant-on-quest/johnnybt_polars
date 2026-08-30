@@ -124,8 +124,8 @@ fn fast_parse_date(s: &str, fmt: &DateFormat) -> Option<i32> {
                 return None;
             }
             let y = parse_digits::<4>(b, 0)? as i32;
-            let m = parse_digits::<2>(b, 5)? as u32;
-            let d = parse_digits::<2>(b, 8)? as u32;
+            let m = parse_digits::<2>(b, 5)?;
+            let d = parse_digits::<2>(b, 8)?;
             civil_to_days(y, m, d)
         }
         DateFormat::Ymd8 => {
@@ -135,8 +135,8 @@ fn fast_parse_date(s: &str, fmt: &DateFormat) -> Option<i32> {
                 return None;
             }
             let y = parse_digits::<4>(b, 0)? as i32;
-            let m = parse_digits::<2>(b, 4)? as u32;
-            let d = parse_digits::<2>(b, 6)? as u32;
+            let m = parse_digits::<2>(b, 4)?;
+            let d = parse_digits::<2>(b, 6)?;
             civil_to_days(y, m, d)
         }
         DateFormat::Other(fmt_str) => {
@@ -167,7 +167,7 @@ fn parse_digits<const N: usize>(b: &[u8], offset: usize) -> Option<u32> {
 /// 算法来自 Howard Hinnant: http://howardhinnant.github.io/date_algorithms.html
 #[inline]
 fn civil_to_days(y: i32, m: u32, d: u32) -> Option<i32> {
-    if m < 1 || m > 12 || d < 1 || d > 31 {
+    if !(1..=12).contains(&m) || !(1..=31).contains(&d) {
         return None;
     }
     let y = if m <= 2 { y - 1 } else { y };
@@ -430,19 +430,6 @@ pub fn read_csvs_to_batches(
         parse_csv_from_bytes(bytes, columns, schema_spec, opts).map_err(|e| format!("{path}: {e}"))
     })?;
     align_all(&batches)
-}
-
-/// 兼容入口：合并成单个 RecordBatch
-pub fn read_csvs_to_batch(
-    paths: &[String],
-    columns: Option<&[String]>,
-    schema_spec: &SchemaSpec,
-    opts: &ParseOptions,
-    io_threads: usize,
-) -> Result<RecordBatch, String> {
-    let (schema, batches) = read_csvs_to_batches(paths, columns, schema_spec, opts, io_threads)?;
-    arrow::compute::concat_batches(&schema, &batches)
-        .map_err(|e| format!("合并 RecordBatch 失败: {e}"))
 }
 
 #[cfg(test)]
