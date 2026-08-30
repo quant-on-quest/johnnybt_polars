@@ -1398,6 +1398,7 @@ dependencies = [
  "encoding_rs",
  "futures",
  "memchr",
+ "numpy",
  "polars",
  "pyo3",
  "pyo3-polars",

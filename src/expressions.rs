@@ -121,7 +121,11 @@ fn vintage(inputs: &[Series], kwargs: VintageKwargs) -> PolarsResult<Series> {
         let (Some(r), Some(p)) = (report.get(i), publish.get(i)) else {
             continue;
         };
-        rows.push((p, quarter_index(r), lines.iter().map(|c| c.get(i)).collect()));
+        rows.push((
+            p,
+            quarter_index(r),
+            lines.iter().map(|c| c.get(i)).collect(),
+        ));
     }
     rows.sort_by_key(|(p, q, _)| (*p, *q));
 

@@ -1,13 +1,13 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use arrow::array::*;
-use arrow::datatypes::{DataType, Date32Type, Field, Float64Type, Int64Type, Schema};
-use arrow::record_batch::RecordBatch;
 use crate::loader::batch_util::align_all;
 use crate::loader::chunked_io::read_parse_chunked;
 use crate::loader::csv_scan::Scanner;
 use crate::loader::gbk::decode_gbk;
+use arrow::array::*;
+use arrow::datatypes::{DataType, Date32Type, Field, Float64Type, Int64Type, Schema};
+use arrow::record_batch::RecordBatch;
 
 /// 列类型枚举，由 Python 端指定
 #[derive(Clone, Debug)]
@@ -190,8 +190,7 @@ impl ColumnBuilder {
                 DateFormat::from_str(format),
             ),
         };
-        let track_failures =
-            !declared && matches!(kind, BuilderKind::F64(_) | BuilderKind::I64(_));
+        let track_failures = !declared && matches!(kind, BuilderKind::F64(_) | BuilderKind::I64(_));
         ColumnBuilder {
             kind,
             track_failures,
@@ -428,8 +427,7 @@ pub fn read_csvs_to_batches(
     io_threads: usize,
 ) -> Result<(arrow::datatypes::SchemaRef, Vec<RecordBatch>), String> {
     let batches = read_parse_chunked(paths, io_threads, |bytes, path| {
-        parse_csv_from_bytes(bytes, columns, schema_spec, opts)
-            .map_err(|e| format!("{path}: {e}"))
+        parse_csv_from_bytes(bytes, columns, schema_spec, opts).map_err(|e| format!("{path}: {e}"))
     })?;
     align_all(&batches)
 }
@@ -557,7 +555,8 @@ mod tests {
     #[test]
     fn default_type_str_keeps_undeclared_columns_as_text() {
         let text = "免责行\n代码,标题\nsh600000,某公告\n";
-        let batch = parse_csv_from_text(text, None, &spec(&[], &[], ColType::Str), &opts()).unwrap();
+        let batch =
+            parse_csv_from_text(text, None, &spec(&[], &[], ColType::Str), &opts()).unwrap();
 
         assert_eq!(strs(&batch, "标题"), vec![Some("某公告".into())]);
     }
@@ -566,10 +565,15 @@ mod tests {
     fn int64_keeps_precision_beyond_float64() {
         let text = "免责行\na,v\nx,9007199254740993\nx,-42\nx,\nx,不是数字\nx,1.5\n";
         let batch =
-            parse_csv_from_text(text, None, &spec(&["a"], &["v"], ColType::Float64), &opts()).unwrap();
+            parse_csv_from_text(text, None, &spec(&["a"], &["v"], ColType::Float64), &opts())
+                .unwrap();
 
         let (i, _) = batch.schema().column_with_name("v").unwrap();
-        let a = batch.column(i).as_any().downcast_ref::<Int64Array>().unwrap();
+        let a = batch
+            .column(i)
+            .as_any()
+            .downcast_ref::<Int64Array>()
+            .unwrap();
         assert_eq!(a.value(0), 9007199254740993);
         assert_eq!(a.value(1), -42);
         assert!(a.is_null(2), "空值 → null");
@@ -601,9 +605,13 @@ mod tests {
     #[test]
     fn trim_true_also_trims_quoted_fields() {
         let text = "免责行\na,b\n  空格  ,\"  引号内  \"\n";
-        let batch =
-            parse_csv_from_text(text, None, &spec(&["a", "b"], &[], ColType::Float64), &opts())
-                .unwrap();
+        let batch = parse_csv_from_text(
+            text,
+            None,
+            &spec(&["a", "b"], &[], ColType::Float64),
+            &opts(),
+        )
+        .unwrap();
 
         assert_eq!(strs(&batch, "a"), vec![Some("空格".into())]);
         assert_eq!(strs(&batch, "b"), vec![Some("引号内".into())]);

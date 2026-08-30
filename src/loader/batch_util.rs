@@ -95,9 +95,7 @@ mod tests {
         let arrays: Vec<ArrayRef> = cols
             .iter()
             .map(|(_, dt)| match dt {
-                DataType::Utf8 => {
-                    Arc::new(StringArray::from(vec!["x"; n])) as ArrayRef
-                }
+                DataType::Utf8 => Arc::new(StringArray::from(vec!["x"; n])) as ArrayRef,
                 _ => Arc::new(Float64Array::from(vec![1.0; n])) as ArrayRef,
             })
             .collect();
@@ -132,6 +130,13 @@ mod tests {
         let out = concat_aligned(&[a, b]).unwrap();
         assert_eq!(out.schema().field(0).name(), "x");
         assert_eq!(out.schema().field(1).name(), "y");
-        assert_eq!(out.column(1).as_any().downcast_ref::<StringArray>().unwrap().value(1), "x");
+        assert_eq!(
+            out.column(1)
+                .as_any()
+                .downcast_ref::<StringArray>()
+                .unwrap()
+                .value(1),
+            "x"
+        );
     }
 }

@@ -99,9 +99,9 @@ fn batches_to_frame(
         let mut writer = StreamWriter::try_new(&mut buf, &schema)
             .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("IPC writer: {e}")))?;
         for batch in &batches {
-            writer
-                .write(batch)
-                .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("IPC write: {e}")))?;
+            writer.write(batch).map_err(|e| {
+                pyo3::exceptions::PyRuntimeError::new_err(format!("IPC write: {e}"))
+            })?;
         }
         writer
             .finish()
@@ -135,8 +135,14 @@ pub fn read_gbk_csvs(
         trim,
     };
     let (schema, batches) = guard(|| {
-        stock_reader::read_csvs_to_batches(&paths, columns.as_deref(), &schema_spec, &opts, io_threads)
-            .map_err(pyo3::exceptions::PyRuntimeError::new_err)
+        stock_reader::read_csvs_to_batches(
+            &paths,
+            columns.as_deref(),
+            &schema_spec,
+            &opts,
+            io_threads,
+        )
+        .map_err(pyo3::exceptions::PyRuntimeError::new_err)
     })?;
     batches_to_frame(schema, batches)
 }

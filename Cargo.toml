@@ -19,6 +19,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "fs"] }
 futures = "0.3"
 arrow = { version = "55", features = ["ipc"] }
 chrono = "0.4"
+numpy = "0.29"
 
 [profile.release]
 lto = true

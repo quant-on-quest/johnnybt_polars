@@ -274,7 +274,10 @@ mod tests {
 
     #[test]
     fn trims_whitespace_and_skips_blank_lines() {
-        assert_eq!(rows(" a , b \n\n\n 1 , 2 \n", true), vec![vec!["a", "b"], vec!["1", "2"]]);
+        assert_eq!(
+            rows(" a , b \n\n\n 1 , 2 \n", true),
+            vec![vec!["a", "b"], vec!["1", "2"]]
+        );
     }
 
     #[test]
@@ -317,21 +320,27 @@ mod tests {
 
     #[test]
     fn quoting_disabled_keeps_quotes_literal() {
-        assert_eq!(
-            rows("\"a,b\",c\n", false),
-            vec![vec!["\"a", "b\"", "c"]]
-        );
+        assert_eq!(rows("\"a,b\",c\n", false), vec![vec!["\"a", "b\"", "c"]]);
     }
 
     #[test]
     fn crlf_line_endings() {
-        assert_eq!(rows("a,b\r\n1,2\r\n", true), vec![vec!["a", "b"], vec!["1", "2"]]);
-        assert_eq!(rows("\"a\",b\r\n1,2\r\n", true), vec![vec!["a", "b"], vec!["1", "2"]]);
+        assert_eq!(
+            rows("a,b\r\n1,2\r\n", true),
+            vec![vec!["a", "b"], vec!["1", "2"]]
+        );
+        assert_eq!(
+            rows("\"a\",b\r\n1,2\r\n", true),
+            vec![vec!["a", "b"], vec!["1", "2"]]
+        );
     }
 
     #[test]
     fn unterminated_quote_at_eof() {
-        assert_eq!(rows("a,\"未闭合\n还在里面", true), vec![vec!["a", "未闭合\n还在里面"]]);
+        assert_eq!(
+            rows("a,\"未闭合\n还在里面", true),
+            vec![vec!["a", "未闭合\n还在里面"]]
+        );
     }
 
     #[test]

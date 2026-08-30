@@ -17,6 +17,8 @@ from polars.plugins import register_plugin_function
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
+    import numpy as np
+
 _LIB = Path(__file__).parent
 
 
@@ -158,3 +160,26 @@ def scan_gbk_csv(
                 return
 
     return register_io_source(source, schema=pl.Schema(out_schema))
+
+
+def scatter(positions: pl.DataFrame, names: list[str], rows: int, cols: int) -> dict[str, np.ndarray]:
+    """Scatter a long frame into dense (rows, cols) float64 matrices.
+
+    Each named column is written into its own NaN-initialised matrix at the
+    frame's `_row` / `_col` positions, columns in parallel on rayon's pool.
+    A duplicated position keeps the last row and every value becomes a float
+    with null as NaN — numpy fancy-index semantics, in Rust.
+
+    Args:
+        positions: The frame, carrying Int32 `_row` and `_col` columns.
+        names: The value columns to materialise.
+        rows: The number of grid rows (bars).
+        cols: The number of grid columns (instruments).
+
+    Returns:
+        One writable C-contiguous matrix per name.
+    """
+    from johnnybt_polars import _lib
+
+    result: dict[str, np.ndarray] = _lib.scatter(positions, names, rows, cols)
+    return result
