@@ -5,6 +5,7 @@ mod expressions;
 mod io;
 mod loader;
 mod scatter;
+mod simulate;
 
 #[global_allocator]
 static ALLOC: PolarsAllocator = PolarsAllocator::new();

@@ -1390,6 +1390,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "johnnybt_engine"
+version = "0.1.0"
+dependencies = [
+ "ndarray",
+ "polars",
+ "rayon",
+ "serde",
+]
+
+[[package]]
 name = "johnnybt_polars"
 version = "0.1.0"
 dependencies = [
@@ -1397,6 +1407,7 @@ dependencies = [
  "chrono",
  "encoding_rs",
  "futures",
+ "johnnybt_engine",
  "memchr",
  "numpy",
  "polars",

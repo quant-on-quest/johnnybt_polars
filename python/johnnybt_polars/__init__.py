@@ -76,6 +76,28 @@ def vintage(
     )
 
 
+def simulate(columns: "Sequence[pl.Expr | str]", **kwargs: object) -> pl.Expr:
+    """Walk one account per group under the framework's own bookkeeping.
+
+    Called under `group_by(account).agg(...)`: one group is one account, one
+    row is one bar, a cell holding the market is a list over the account's
+    universe. The kwargs say which column is which and carry the market's
+    rules and the account's terms — the `SimulateKwargs` contract in
+    `johnnybt_engine::plugin`. polars runs the accounts on its own thread
+    pool.
+
+    Args:
+        columns: The list and scalar columns, in the order the kwargs index.
+        **kwargs: The contract's keys, serialised for the plugin.
+
+    Returns:
+        The expression: one struct per bar (equity, cash, fees, bought, sold).
+    """
+    return register_plugin_function(
+        plugin_path=_LIB, args=list(columns), function_name="simulate", is_elementwise=False, kwargs=dict(kwargs)
+    )
+
+
 def scan_gbk_csv(
     paths: "Sequence[str | Path]",
     *,
