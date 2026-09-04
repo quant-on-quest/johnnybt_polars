@@ -6,7 +6,7 @@ use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
 
 fn simulate_output(_input_fields: &[Field], kwargs: SimulateKwargs) -> PolarsResult<Field> {
-    Ok(output_field("simulate", kwargs.positions))
+    Ok(output_field("simulate", kwargs.positions, kwargs.fills))
 }
 
 /// Walk one account: one row per bar in, one struct per bar out.
