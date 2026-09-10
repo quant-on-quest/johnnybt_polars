@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 
     import numpy as np
 
+__all__ = ["abi_probe", "scan_gbk_csv", "scatter", "simulate", "vintage"]
+"""What this plugin offers polars: two expressions, an IO scan, a scatter, an account walk."""
+
 _LIB = Path(__file__).parent
 
 

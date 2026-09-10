@@ -7,7 +7,23 @@ name = "johnnybt-polars"
 version = "0.1.0"
 description = "Polars expression plugins for johnnybt: the hot paths, in Rust, parallel inside the engine."
 requires-python = ">=3.11"
+authors = [{ name = "MJ" }]
+license = "MIT"
+license-files = ["LICENSE"]
+readme = "README.md"
+keywords = ["polars", "plugin", "rust", "gb18030", "backtest", "quant"]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Topic :: Database",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
 dependencies = ["polars>=1.40"]
+
+[project.urls]
+Homepage = "https://github.com/quant-on-quest/johnnybt_polars"
+Repository = "https://github.com/quant-on-quest/johnnybt_polars"
 
 [tool.maturin]
 python-source = "python"
