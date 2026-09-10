@@ -78,9 +78,20 @@ jobs:
       - name: install
         shell: bash
         run: python -m pip install --find-links dist johnnybt-polars
-      - name: import
+      # Not just "does it import": the plugin has to register with the
+      # polars in front of it. `abi_probe` exists for exactly this — it adds
+      # one, inside Rust, through the expression engine.
+      - name: run an expression
+        shell: bash
         run: |
-          python -c "import johnnybt_polars as lib; print(lib.abi_probe()); print(sorted(lib.__all__))"
+          python - <<'PY'
+          import polars as pl
+          import johnnybt_polars as lib
+          frame = pl.DataFrame({"n": [1, 2, 3]}).with_columns(lib.abi_probe("n").alias("plus"))
+          assert frame["plus"].to_list() == [2, 3, 4], frame
+          print(frame)
+          print(sorted(lib.__all__))
+          PY
 
   publish:
     name: publish to PyPI
