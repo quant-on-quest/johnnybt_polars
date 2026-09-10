@@ -83,6 +83,11 @@ jobs:
       # one, inside Rust, through the expression engine.
       - name: run an expression
         shell: bash
+        # Windows consoles are cp1252 by default, and polars draws its
+        # frames with box characters — the plugin ran, and printing what it
+        # returned is what raised.
+        env:
+          PYTHONIOENCODING: utf-8
         run: |
           python - <<'PY'
           import polars as pl
