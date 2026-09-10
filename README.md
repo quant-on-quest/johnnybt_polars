@@ -1,6 +1,6 @@
 # johnnybt-polars
 
-The hot paths of [johnnybt](https://github.com/quant-on-quest/johnnybt) in Rust,
+The hot paths of `johnnybt` in Rust,
 as polars plugins — so the parallelism lives where the work is, not behind
 Python's GIL.
 

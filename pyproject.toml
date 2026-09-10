@@ -22,8 +22,8 @@ classifiers = [
 dependencies = ["polars>=1.40"]
 
 [project.urls]
-Homepage = "https://github.com/quant-on-quest/johnnybt_polars"
-Repository = "https://github.com/quant-on-quest/johnnybt_polars"
+Homepage = "https://github.com/quant-on-quest/johnnybt-polars"
+Repository = "https://github.com/quant-on-quest/johnnybt-polars"
 
 [tool.maturin]
 python-source = "python"
