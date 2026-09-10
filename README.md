@@ -22,7 +22,14 @@ the parallelism, and no data crosses back into Python in between.
 pip install johnnybt-polars
 ```
 
-Prebuilt wheels — no Rust toolchain needed.
+Prebuilt wheels — no Rust toolchain needed. One per platform, `abi3` against
+Python 3.11, which covers 3.11 through 3.14:
+
+| | x86_64 | arm64 |
+|---|---|---|
+| Linux | manylinux2014 (glibc 2.17 and up) | manylinux2014 (glibc 2.17 and up) |
+| macOS | 10.12 and up | 11.0 and up |
+| Windows | yes | yes |
 
 ## Use
 
